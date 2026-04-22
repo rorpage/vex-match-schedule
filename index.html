@@ -414,6 +414,9 @@
     .match-card.win-blue .alliance.blue { background: rgba(58, 123, 213, 0.07); }
     .match-card.win-red .alliance.red { background: rgba(213, 58, 58, 0.07); }
 
+    .score-val.our-win { font-weight: 900; text-shadow: 0 0 12px currentColor; }
+    .score-val.our-loss { font-weight: 400; opacity: 0.6; box-shadow: 0 0 0 2px currentColor; border-radius: 4px; padding: 0 4px; }
+
     /* EMPTY / LOADING / ERROR STATES */
     .state-box {
       text-align: center;
@@ -686,7 +689,7 @@
         </div>
         <div class="match-body">
           ${renderAlliance(blue, 'blue', ourTeamId)}
-          ${renderScoreCenter(blue, red, hasScore)}
+          ${renderScoreCenter(blue, red, hasScore, ourTeamId)}
           ${renderAlliance(red, 'red', ourTeamId)}
         </div>
       </div>`;
@@ -708,19 +711,31 @@
       </div>`;
   }
 
-  function renderScoreCenter(blue, red, hasScore) {
+  function renderScoreCenter(blue, red, hasScore, ourTeamId) {
     if (!hasScore) {
       return `
         <div class="score-center">
           <span class="score-pending">vs</span>
         </div>`;
     }
+
+    const ourAlliance = blue?.teams.some(t => t.team.id === ourTeamId) ? 'blue'
+      : red?.teams.some(t => t.team.id === ourTeamId) ? 'red'
+      : null;
+    const ourScore = ourAlliance === 'blue' ? blue?.score : red?.score;
+    const theirScore = ourAlliance === 'blue' ? red?.score : blue?.score;
+    const weWon = ourAlliance && ourScore > theirScore;
+    const weLost = ourAlliance && ourScore < theirScore;
+
+    const blueClass = ourAlliance === 'blue' ? (weWon ? ' our-win' : weLost ? ' our-loss' : '') : '';
+    const redClass  = ourAlliance === 'red'  ? (weWon ? ' our-win' : weLost ? ' our-loss' : '') : '';
+
     return `
       <div class="score-center">
         <div class="score-display">
-          <span class="score-val blue">${blue?.score ?? '-'}</span>
+          <span class="score-val blue${blueClass}">${blue?.score ?? '-'}</span>
           <span class="score-sep">:</span>
-          <span class="score-val red">${red?.score ?? '-'}</span>
+          <span class="score-val red${redClass}">${red?.score ?? '-'}</span>
         </div>
         <div class="score-label">Blue · Red</div>
       </div>`;
