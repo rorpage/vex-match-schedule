@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VEX Match Schedule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,7 +30,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Press Start 2P', monospace;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -414,8 +417,8 @@
     .match-card.win-blue .alliance.blue { background: rgba(58, 123, 213, 0.07); }
     .match-card.win-red .alliance.red { background: rgba(213, 58, 58, 0.07); }
 
-    .score-val.our-win { font-weight: 900; text-shadow: 0 0 12px currentColor; }
-    .score-val.our-loss { font-weight: 400; opacity: 0.6; box-shadow: 0 0 0 2px currentColor; border-radius: 4px; padding: 0 4px; }
+    .score-val.our-win { }
+    .score-val.our-loss { opacity: 0.6; box-shadow: 0 0 0 2px currentColor; border-radius: 4px; padding: 0 4px 4px; }
 
     /* EMPTY / LOADING / ERROR STATES */
     .state-box {
