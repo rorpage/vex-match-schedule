@@ -469,8 +469,8 @@
   <div class="modal">
     <h2>Settings</h2>
     <div class="form-group">
-      <label>API Token (JWT)</label>
-      <input type="password" id="jwtInput" placeholder="Paste your Bearer token here" />
+      <label>API Token</label>
+      <input type="password" id="apiTokenInput" placeholder="Paste your x-api-token here" />
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -497,9 +497,9 @@
   </div>
 
   <div class="status-bar" id="statusBar" style="display:none">
-    <div class="pill" id="teamPill"><span class="dot"></span> <span id="teamPillText">—</span></div>
-    <div class="pill" id="eventPill"><span>Event</span> <span id="eventPillText">—</span></div>
-    <div class="pill live" id="lastFetchPill"><span class="dot"></span> <span id="lastFetchText">—</span></div>
+    <div class="pill" id="teamPill"><span class="dot"></span> <span id="teamPillText">-</span></div>
+    <div class="pill" id="eventPill"><span>Event</span> <span id="eventPillText">-</span></div>
+    <div class="pill live" id="lastFetchPill"><span class="dot"></span> <span id="lastFetchText">-</span></div>
     <button class="btn-ghost" id="autoRefreshBtn" style="font-size:0.78rem;padding:4px 12px;">Auto-refresh: OFF</button>
   </div>
 
@@ -513,11 +513,11 @@
 </main>
 
 <script>
-  const STORAGE_KEYS = { jwt: 'vex_jwt', teamId: 'vex_teamId', eventId: 'vex_eventId' };
+  const STORAGE_KEYS = { apiToken: 'vex_apiToken', teamId: 'vex_teamId', eventId: 'vex_eventId' };
 
   // --- STATE ---
   let state = {
-    jwt: localStorage.getItem(STORAGE_KEYS.jwt) || '',
+    apiToken: localStorage.getItem(STORAGE_KEYS.apiToken) || '',
     teamId: localStorage.getItem(STORAGE_KEYS.teamId) || '96957',
     eventId: localStorage.getItem(STORAGE_KEYS.eventId) || '64025',
     autoRefresh: false,
@@ -548,11 +548,11 @@
   });
 
   function openModal() {
-    $('jwtInput').value = state.jwt;
+    $('apiTokenInput').value = state.apiToken;
     $('teamIdInput').value = state.teamId;
     $('eventIdInput').value = state.eventId;
     modal.classList.add('open');
-    $('jwtInput').focus();
+    $('apiTokenInput').focus();
   }
 
   function closeModal() {
@@ -560,10 +560,10 @@
   }
 
   function saveSettings() {
-    state.jwt = $('jwtInput').value.trim();
+    state.apiToken = $('apiTokenInput').value.trim();
     state.teamId = $('teamIdInput').value.trim();
     state.eventId = $('eventIdInput').value.trim();
-    localStorage.setItem(STORAGE_KEYS.jwt, state.jwt);
+    localStorage.setItem(STORAGE_KEYS.apiToken, state.apiToken);
     localStorage.setItem(STORAGE_KEYS.teamId, state.teamId);
     localStorage.setItem(STORAGE_KEYS.eventId, state.eventId);
     closeModal();
@@ -572,31 +572,29 @@
 
   // --- FETCH ---
   async function fetchMatches() {
-    if (!state.jwt || !state.teamId || !state.eventId) {
+    if (!state.teamId || !state.eventId) {
       openModal();
       return;
     }
 
     setLoading();
 
-    const url = `https://www.robotevents.com/api/v2/teams/${encodeURIComponent(state.teamId)}/matches?event[]=${encodeURIComponent(state.eventId)}`;
+    const url = `/api/matches?teamId=${encodeURIComponent(state.teamId)}&eventId=${encodeURIComponent(state.eventId)}`;
 
     try {
-      const res = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${state.jwt}`,
-          'Accept': 'application/json',
-        }
-      });
+      const headers = { 'Accept': 'application/json' };
+      if (state.apiToken) headers['x-api-token'] = state.apiToken;
+
+      const res = await fetch(url, { headers });
 
       if (!res.ok) {
-        if (res.status === 401) throw new Error('Invalid or expired API token (401). Update your token in Settings.');
+        if (res.status === 401) throw new Error('Invalid API token (401). Update your token in Settings.');
         throw new Error(`API error: ${res.status} ${res.statusText}`);
       }
 
-      const json = await res.json();
-      renderMatches(json.data || []);
-      updateStatusBar(json.data || []);
+      const matches = await res.json();
+      renderMatches(matches);
+      updateStatusBar(matches);
 
     } catch (err) {
       setError(err.message);
@@ -681,8 +679,8 @@
         <div class="match-header">
           <span class="match-name">${escHtml(match.name)}</span>
           <div class="match-meta">
-            <span class="match-field">${escHtml(match.field || '—')}</span>
-            <span class="match-time">${match.scheduled ? formatTime(match.scheduled) : '—'}</span>
+            <span class="match-field">${escHtml(match.field || '-')}</span>
+            <span class="match-time">${match.scheduled ? formatTime(match.scheduled) : '-'}</span>
             ${statusLabel}
           </div>
         </div>
@@ -720,9 +718,9 @@
     return `
       <div class="score-center">
         <div class="score-display">
-          <span class="score-val blue">${blue?.score ?? '—'}</span>
+          <span class="score-val blue">${blue?.score ?? '-'}</span>
           <span class="score-sep">:</span>
-          <span class="score-val red">${red?.score ?? '—'}</span>
+          <span class="score-val red">${red?.score ?? '-'}</span>
         </div>
         <div class="score-label">Blue · Red</div>
       </div>`;
@@ -761,7 +759,7 @@
   }
 
   // --- INIT ---
-  if (state.jwt && state.teamId && state.eventId) {
+  if (state.teamId && state.eventId) {
     fetchMatches();
   } else {
     openModal();
