@@ -1,6 +1,6 @@
 # VEX Match Schedule
 
-A simple single-page app for viewing upcoming VEX Robotics match schedules, built for use with the [RobotEvents API](https://www.robotevents.com/api/v2).
+A simple single-page app for viewing upcoming VEX Robotics match schedules, built for use with the [RobotEvents API](https://events.vex.com/api/v2).
 
 ## Usage
 
