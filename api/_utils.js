@@ -42,7 +42,7 @@ export function createHandler(transform) {
 }
 
 export async function fetchMatchesFromApi(teamId, eventId, token, res) {
-  const url = `https://www.robotevents.com/api/v2/teams/${encodeURIComponent(teamId)}/matches?event[]=${encodeURIComponent(eventId)}`;
+  const url = `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches?event[]=${encodeURIComponent(eventId)}`;
   try {
     const upstream = await fetch(url, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
