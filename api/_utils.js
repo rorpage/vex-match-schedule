@@ -54,9 +54,11 @@ export function formatTime(iso) {
 }
 
 export function getNextMatch(matches) {
-  const now = new Date();
+  // Events often run behind schedule, so a match that hasn't started yet can
+  // have a "scheduled" time already in the past. Don't filter those out:
+  // the next match is simply the earliest-scheduled match not yet started.
   return matches
-    .filter(m => !m.started && m.scheduled && new Date(m.scheduled) > now)
+    .filter(m => !m.started && m.scheduled)
     .sort((a, b) => new Date(a.scheduled) - new Date(b.scheduled))[0];
 }
 
