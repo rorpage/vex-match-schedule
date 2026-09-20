@@ -5,16 +5,18 @@ export default createHandler((matches, query) => {
   const next = getNextMatch(matches);
 
   if (!next) {
-    return { color: null, name: null, field: null, time: null, formattedTime: null };
+    return [];
   }
 
   const alliance = next.alliances.find(a => a.teams.some(t => t.team.id === teamId));
 
-  return {
-    color: alliance?.color ?? null,
-    name: next.name,
-    field: next.field,
-    time: next.scheduled,
-    formattedTime: formatTime(next.scheduled),
-  };
+  return [
+    {
+      color: alliance?.color ?? null,
+      name: next.name,
+      field: next.field,
+      time: next.scheduled,
+      formattedTime: formatTime(next.scheduled),
+    },
+  ];
 });
