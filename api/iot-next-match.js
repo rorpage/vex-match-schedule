@@ -1,12 +1,8 @@
-import { createHandler } from './_utils.js';
+import { createHandler, getNextMatch } from './_utils.js';
 
 export default createHandler((matches, query) => {
   const teamId = parseInt(query.teamId, 10);
-  const now = new Date();
-
-  const next = matches
-    .filter(m => !m.started && m.scheduled && new Date(m.scheduled) > now)
-    .sort((a, b) => new Date(a.scheduled) - new Date(b.scheduled))[0];
+  const next = getNextMatch(matches);
 
   if (!next) {
     return { color: null, name: null, field: null, time: null };
@@ -20,4 +16,4 @@ export default createHandler((matches, query) => {
     field: next.field,
     time: next.scheduled,
   };
-}, ['teamId']);
+});

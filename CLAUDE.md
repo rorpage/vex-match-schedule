@@ -9,7 +9,7 @@
 - `index.html` - single-page front-end, no build step
 - `api/matches.js` - proxy endpoint returning all matches for a team/event
 - `api/next-match.js` - endpoint returning only the next upcoming match
-- `api/iot-next-match.js` - endpoint for IoT devices, returning color, name, field, and time for the next match by team ID alone
+- `api/iot-next-match.js` - endpoint for IoT devices, returning color, name, field, and time for the next match
 - `api/_utils.js` - shared helpers for auth, env var checks, and RobotEvents fetch
 
 ## API conventions

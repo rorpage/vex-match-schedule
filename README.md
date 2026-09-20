@@ -38,9 +38,9 @@ Returns the full array of matches for the given team and event. Used by the fron
 
 Returns an array containing the single next upcoming match, or an empty array if none.
 
-`GET /api/iot-next-match?teamId=96957`
+`GET /api/iot-next-match?teamId=96957&eventId=64025`
 
-For IoT devices: takes only a team ID (no event ID needed) and returns a single object with the alliance color, match name, field, and scheduled time of the team's next upcoming match across all its events:
+For IoT devices: returns a single object with the alliance color, match name, field, and scheduled time of the team's next upcoming match:
 
 ```json
 { "color": "blue", "name": "Qualifier 12", "field": "Field 1", "time": "2026-09-20T14:30:00.000Z" }

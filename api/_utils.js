@@ -25,12 +25,12 @@ export function requireQueryParams(req, res, ...params) {
   return true;
 }
 
-export function createHandler(transform, requiredParams = ['teamId', 'eventId']) {
+export function createHandler(transform) {
   return async function handler(req, res) {
     if (!checkApiToken(req, res)) return;
     const token = getRobotEventsToken(res);
     if (!token) return;
-    if (!requireQueryParams(req, res, ...requiredParams)) return;
+    if (!requireQueryParams(req, res, 'teamId', 'eventId')) return;
 
     const { teamId, eventId } = req.query;
     const matches = await fetchMatchesFromApi(teamId, eventId, token, res);
@@ -41,10 +41,15 @@ export function createHandler(transform, requiredParams = ['teamId', 'eventId'])
   };
 }
 
+export function getNextMatch(matches) {
+  const now = new Date();
+  return matches
+    .filter(m => !m.started && m.scheduled && new Date(m.scheduled) > now)
+    .sort((a, b) => new Date(a.scheduled) - new Date(b.scheduled))[0];
+}
+
 export async function fetchMatchesFromApi(teamId, eventId, token, res) {
-  const url = eventId
-    ? `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches?event[]=${encodeURIComponent(eventId)}`
-    : `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches`;
+  const url = `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches?event[]=${encodeURIComponent(eventId)}`;
   try {
     const upstream = await fetch(url, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
