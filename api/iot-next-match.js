@@ -1,11 +1,11 @@
-import { createHandler, getNextMatch } from './_utils.js';
+import { createHandler, getNextMatch, formatTime } from './_utils.js';
 
 export default createHandler((matches, query) => {
   const teamId = parseInt(query.teamId, 10);
   const next = getNextMatch(matches);
 
   if (!next) {
-    return { color: null, name: null, field: null, time: null };
+    return { color: null, name: null, field: null, time: null, formattedTime: null };
   }
 
   const alliance = next.alliances.find(a => a.teams.some(t => t.team.id === teamId));
@@ -15,5 +15,6 @@ export default createHandler((matches, query) => {
     name: next.name,
     field: next.field,
     time: next.scheduled,
+    formattedTime: formatTime(next.scheduled),
   };
 });
