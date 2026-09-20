@@ -41,6 +41,10 @@ export function createHandler(transform) {
   };
 }
 
+export function formatTime(iso) {
+  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
 export function getNextMatch(matches) {
   const now = new Date();
   return matches
