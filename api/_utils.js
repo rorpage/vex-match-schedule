@@ -25,24 +25,26 @@ export function requireQueryParams(req, res, ...params) {
   return true;
 }
 
-export function createHandler(transform) {
+export function createHandler(transform, requiredParams = ['teamId', 'eventId']) {
   return async function handler(req, res) {
     if (!checkApiToken(req, res)) return;
     const token = getRobotEventsToken(res);
     if (!token) return;
-    if (!requireQueryParams(req, res, 'teamId', 'eventId')) return;
+    if (!requireQueryParams(req, res, ...requiredParams)) return;
 
     const { teamId, eventId } = req.query;
     const matches = await fetchMatchesFromApi(teamId, eventId, token, res);
     if (!matches) return;
 
     res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
-    return res.status(200).json(transform(matches));
+    return res.status(200).json(transform(matches, req.query));
   };
 }
 
 export async function fetchMatchesFromApi(teamId, eventId, token, res) {
-  const url = `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches?event[]=${encodeURIComponent(eventId)}`;
+  const url = eventId
+    ? `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches?event[]=${encodeURIComponent(eventId)}`
+    : `https://events.vex.com/api/v2/teams/${encodeURIComponent(teamId)}/matches`;
   try {
     const upstream = await fetch(url, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },

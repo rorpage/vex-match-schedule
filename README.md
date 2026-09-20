@@ -28,7 +28,7 @@ The token entered in Settings must match the `API_TOKEN` env var set on your Ver
 
 ## API Endpoints
 
-Both endpoints require an `x-api-token` request header matching the `API_TOKEN` env var.
+All endpoints require an `x-api-token` request header matching the `API_TOKEN` env var.
 
 `GET /api/matches?teamId=96957&eventId=64025`
 
@@ -37,6 +37,16 @@ Returns the full array of matches for the given team and event. Used by the fron
 `GET /api/next-match?teamId=96957&eventId=64025`
 
 Returns an array containing the single next upcoming match, or an empty array if none.
+
+`GET /api/iot-next-match?teamId=96957`
+
+For IoT devices: takes only a team ID (no event ID needed) and returns a single object with the alliance color, match name, field, and scheduled time of the team's next upcoming match across all its events:
+
+```json
+{ "color": "blue", "name": "Qualifier 12", "field": "Field 1", "time": "2026-09-20T14:30:00.000Z" }
+```
+
+If no upcoming match is found, all fields are `null`.
 
 ### Environment Variables
 
