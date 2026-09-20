@@ -42,7 +42,15 @@ export function createHandler(transform) {
 }
 
 export function formatTime(iso) {
-  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  const match = /T(\d{2}):(\d{2})/.exec(iso);
+  if (!match) return null;
+
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2];
+  const period = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+
+  return `${hours}:${minutes} ${period}`;
 }
 
 export function getNextMatch(matches) {
