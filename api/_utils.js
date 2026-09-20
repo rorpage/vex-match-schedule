@@ -37,8 +37,15 @@ export function createHandler(transform) {
     if (!matches) return;
 
     res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
-    return res.status(200).json(transform(matches));
+    return res.status(200).json(transform(matches, req.query));
   };
+}
+
+export function getNextMatch(matches) {
+  const now = new Date();
+  return matches
+    .filter(m => !m.started && m.scheduled && new Date(m.scheduled) > now)
+    .sort((a, b) => new Date(a.scheduled) - new Date(b.scheduled))[0];
 }
 
 export async function fetchMatchesFromApi(teamId, eventId, token, res) {
